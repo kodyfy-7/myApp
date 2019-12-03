@@ -1,0 +1,145 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Auth;
+use App\Test;
+use DB;
+use PDF;
+
+class TestController extends Controller
+{
+    public function __construct()
+    {
+        $this->middleware('auth:admin');
+    }
+    
+    function index()
+    {
+        $sample_data = $this->get_sample_data();
+        return view('sysAdmin.test.index', compact('sample_data'));
+    }
+
+
+    public function get_sample_data()
+    {
+        $sample_data = Test::latest()->get();
+
+        //$sum = DB::table('result_details')->where('result_id', $id)->sum('total');
+        //$avg = DB::table('result_details')->where('result_id', $id)->avg('total');
+
+        
+        return $sample_data;
+    }
+
+    function pdf(){
+        $data = Test::get();
+        $pdf = PDF::loadView('sysAdmin.test.index', $data);
+        return $pdf->download('test.pdf');
+
+        /*data = ['title' => 'Welcome to Uce'];
+        $pdf = PDF::loadView('sysAdmin.test.index', $data);
+        return $pdf->download('test.pdf');*/
+
+        /*$pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML($this->convert_sample_data_to_html());
+        $pdf->stream();*/
+    }
+
+    function convert_sample_data_to_html()
+    {
+        $sample_data = $this->get_sample_data();
+        $output = '
+                <h3>Result</h3>
+                <table class="table table-bordered" id="datatable">
+                                   
+                                        <tr>
+                                            <th>First name</th>
+                                            <th>Last Name</th>
+                                        </tr>
+                                    
+        
+        
+        ';
+        foreach($sample_data as $result)
+        {
+            $output .= '
+                    <tr>
+                    <td>'.$result->first_name.'</td>
+                    <td>'.$result->last_name.'</td>
+                </tr>           
+            
+            
+            ';
+        }
+        $output .= '</table>';
+        return $output;
+    }
+
+    public function store (Request $request)
+    {
+        $data = array(
+            'first_name'    =>  $request->first_name,
+            'last_name'     =>  $request->last_name
+        );
+        /*$id = DB::table('tbl_sample')->insert($data);
+        if($id > 0)
+        {
+            echo '<div class="alert alert-success">Data Inserted</div>';
+        }*/
+       // $instance = Test::firstOrCreate(['first_name'=> $request->first_name], ['first_name'=> $request->first_name, 'last_name'=> $request->last_name]);
+
+        $instance = Test::updateOrCreate(['first_name'=> $request->first_name], ['first_name'=> $request->first_name, 'last_name'=> $request->last_name]);
+    }
+
+    /*function fetch_data(Request $request)
+    {
+        if($request->ajax())
+        {
+            $data = DB::table('tbl_sample')->orderBy('id','desc')->get();
+            echo json_encode($data);
+        }
+    }
+
+    function add_data(Request $request)
+    {
+        if($request->ajax())
+        {
+            $data = array(
+                'first_name'    =>  $request->first_name,
+                'last_name'     =>  $request->last_name
+            );
+            $id = DB::table('tbl_sample')->insert($data);
+            if($id > 0)
+            {
+                echo '<div class="alert alert-success">Data Inserted</div>';
+            }
+        } 
+    }
+
+    function update_data(Request $request)
+    {
+        if($request->ajax())
+        {
+            $data = array(
+                $request->column_name       =>  $request->column_value
+            );
+            DB::table('tbl_sample')
+                ->where('id', $request->id)
+                ->update($data);
+            echo '<div class="alert alert-success">Data Updated</div>';
+        }
+    }
+
+    function delete_data(Request $request)
+    {
+        if($request->ajax())
+        {
+            DB::table('tbl_sample')
+                ->where('id', $request->id)
+                ->delete();
+            echo '<div class="alert alert-success">Data Deleted</div>';
+        }
+    }*/
+}

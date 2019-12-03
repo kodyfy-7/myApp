@@ -1,0 +1,12 @@
+<!--<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hi</title>
+    </head>
+    <body>
+    <h1>Welcome</h1>
+    <p>Lorem jkdjhoifnlknvoinlfdvkin f;vkn oifnv;lk iufj vmklv v;dpon dg;lkvnvdzlk ldgvkj fUn ;fdviofn oFDNoiu fdhvdfb du pd ohd9puhgelngdhdgojndvjh glbdv fbkl;jFDN zp A:wjknf lfhfb;n vfublfkjdvu vilhb bulh</p>
+    </body>
+</html>
+-->
+<!--{!! Form::open(['id' => 'data_form', 'method' =>'POST']) !!}-->

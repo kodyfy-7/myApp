@@ -1,0 +1,144 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Subjects;
+/*use App\SubjectTeacher;
+use App\SubjectClass;*/
+use Validator;
+use DB;
+
+class SubjectController extends Controller
+{
+    public function __construct()
+    {
+        $this->middleware('auth:admin');
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        if(request()->ajax())
+        {
+            /*$subjects = Subjects::latest()->get();
+            return datatables()->of($subjects) 
+                ->addIndexColumn()
+                ->addColumn('action', function($data){                        
+                    $button = '<button type="button" name="edit" id="'.$data->id.'" class="edit btn btn-warning btn-sm">Edit</button>';
+                    $button .= '&nbsp;&nbsp;';
+                    $button .= '<button type="button" name="delete" id="'.$data->id.'" class="delete btn btn-danger btn-sm">Delete</button>';
+                    return $button;
+                })
+                ->rawColumns(['action'])
+                ->make(true); */
+                
+            $subjects = Subjects::join('classrooms', 'subjects.classroom_id', '=', 'classrooms.id')->join('staff_members', 'subjects.teacher_id', '=', 'staff_members.id')->select(['subjects.id', 'subject_title', 'staff_members.staff_name', 'classrooms.classroom_title']);
+            return datatables()->of($subjects) 
+                ->addIndexColumn()
+                ->addColumn('action', function($data){                        
+                    $button = '<button type="button" name="edit" id="'.$data->id.'" class="edit btn btn-warning btn-sm">Edit</button>';
+                    $button .= '&nbsp;&nbsp;';
+                    $button .= '<button type="button" name="delete" id="'.$data->id.'" class="delete btn btn-danger btn-sm">Delete</button>';
+                    return $button;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+        return view('sysAdmin.subjects.index');
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $rules = array(
+            'subject_title'    =>  'required',
+            'subject_class'    =>  'required',
+            'subject_teacher' => 'required'
+        );
+
+        $error = Validator::make($request->all(), $rules);
+
+        if($error->fails())
+        {
+            return response()->json(['errors' => $error->errors()->all()]);
+        }
+
+        $form_data = array(
+            'subject_title'        =>  $request->subject_title,
+            'classroom_id' => $request->subject_class,
+            'teacher_id' => $request->subject_teacher
+        );
+
+        Subjects::create($form_data);
+
+        
+
+
+        return response()->json(['success' => 'Subject added successfully.']);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
+    }
+}
